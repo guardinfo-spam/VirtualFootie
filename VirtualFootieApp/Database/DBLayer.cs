@@ -66,7 +66,7 @@ namespace VirtualFootieApp.Database
             }
         }
 
-        public IEnumerable<APIPlayerData> GetClubForUser(string user)
+        public IEnumerable<APIPlayerData> GetClubPlayersForUser(string user)
         {
             using (IDbConnection conn = new DBConn().Connection)
             {
@@ -78,5 +78,35 @@ namespace VirtualFootieApp.Database
                 return conn.Query<APIPlayerData>(sb.ToString(), new { user = user });
             }
         }
+
+        public string GetTeamNameForUser(string user)
+        {
+            using (IDbConnection conn = new DBConn().Connection)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append("select team_name from DiscordUsers ")
+                .Append("where discord_handle = @user");
+
+                var result = conn.Query<string>(sb.ToString(), new { user = user });
+                return result.First();
+            }
+        }
+
+        public int SetName(string user, string team_name)
+        {
+            using (IDbConnection conn = new DBConn().Connection)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append("Update DiscordUsers ")
+                .Append("SET team_name = @team_name ")
+                .Append("where discord_handle = @user ")
+                .Append("select @@ROWCOUNT");
+
+                var result = conn.Query<int>(sb.ToString(), new { user = user, team_name = team_name });
+                return result.First();
+            }
+        }
+
+
     }
 }

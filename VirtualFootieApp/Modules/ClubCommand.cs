@@ -11,25 +11,26 @@ namespace VirtualFootieApp.Modules
 {
     public class ClubCommand : ModuleBase
     {
-
-        private WeightedRandomGenerator<APIPlayerData> _weightedData;
-        private List<APIPlayerData> _allPlayersData;
-
         [Command("club")]
         public async Task Club()
         {
             var dBLayer = new DBLayer();
             var user = Context.User;
 
-            var result = dBLayer.GetClubForUser(user.Username).ToList();
+            var result = dBLayer.GetClubPlayersForUser(user.Username).ToList();
+            var teamName = dBLayer.GetTeamNameForUser(user.Username);
             
             var sb = new StringBuilder();
-            foreach ( var player in result )
-            {
-                sb.AppendLine(PreparePlayerForDisplay(player));
-            }            
+
+            sb.AppendLine($"Team: {teamName}");
             
-            // send simple string reply
+            for ( int index = 0; index < result.Count; index++ )
+            {
+                sb.Append(index + 1)
+                  .Append(".")
+                  .AppendLine(PreparePlayerForDisplay(result[index]));
+            }            
+
             await ReplyAsync(sb.ToString());
         }
 
@@ -37,9 +38,9 @@ namespace VirtualFootieApp.Modules
         {
             StringBuilder sb = new StringBuilder();
             sb.Append(player.ToString())
-                .Append("|")
+                .Append(" | ")
                 .Append(player.position)
-                .Append("|")
+                .Append(" | ")
                 .Append(player.rating);
 
             return sb.ToString();
