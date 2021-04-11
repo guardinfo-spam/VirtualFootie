@@ -107,6 +107,22 @@ namespace VirtualFootieApp.Database
             }
         }
 
+        public IEnumerable<APIPlayerData> GetTeamForUser(string user)
+        {
+            using (IDbConnection conn = new DBConn().Connection)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append("select * from UserClub u ")
+                .Append("INNER JOIN PlayersData p on u.player_id = p.PlayerID ")
+                .Append("where u.user_id = (select id from DiscordUsers where discord_handle=@user) and u.is_main_11 = 1");
+
+                string query = sb.ToString();
+
+                var result = conn.Query<APIPlayerData>(sb.ToString(), new { user = user });
+                return result;
+            }
+        }
+
 
     }
 }

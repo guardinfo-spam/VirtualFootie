@@ -7,27 +7,35 @@ using VirtualFootieApp.Database;
 
 namespace VirtualFootieApp.Modules
 {
-    public class ClubCommand : ModuleBase
+    public class TeamCommand : ModuleBase
     {
-        [Command("club")]
-        public async Task Club()
+        [Command("team")]
+        public async Task Team()
         {
             var dBLayer = new DBLayer();
             var user = Context.User;
 
-            var result = dBLayer.GetClubPlayersForUser(user.Username).ToList();
-            var teamName = dBLayer.GetTeamNameForUser(user.Username);
+            var players = dBLayer.GetTeamForUser(user.Username).ToList();
+            var teamName = dBLayer.GetTeamNameForUser(user.Username);            
             
             var sb = new StringBuilder();
 
             sb.AppendLine($"Team: {teamName}");
-            
-            for ( int index = 0; index < result.Count; index++ )
+
+            if ( players != null && players.Count > 0)
             {
-                sb.Append(index + 1)
-                  .Append(".")
-                  .AppendLine(PreparePlayerForDisplay(result[index]));
-            }            
+                for (int index = 0; index < players.Count; index++)
+                {
+                    sb.Append(index + 1)
+                      .Append(".")
+                      .AppendLine(PreparePlayerForDisplay(players[index]));
+                }
+            }
+            else
+            {
+                sb.Append("You haven't set any players. Use the ';starters add player' command");
+            }
+            
 
             await ReplyAsync(sb.ToString());
         }
