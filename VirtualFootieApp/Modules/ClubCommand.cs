@@ -35,7 +35,9 @@ namespace VirtualFootieApp.Modules
         public string PreparePlayerForDisplay(APIPlayerData player)
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append(player.ToString())
+            sb.Append(player.PlayerID)
+                .Append("|")
+                .Append(player.ToString())
                 .Append(" | ")
                 .Append(player.position)
                 .Append(" | ")

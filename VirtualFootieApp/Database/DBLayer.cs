@@ -123,6 +123,34 @@ namespace VirtualFootieApp.Database
             }
         }
 
+        public int AddPlayerToStarters(string user, int player_id)
+        {
+            using (IDbConnection conn = new DBConn().Connection)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append("UPDATE UserClub ")
+                .Append("SET is_main_11 = 1 ")
+                .Append("where user_id = ( select id from DiscordUsers where discord_handle = @user )  and player_id = @player_id ")
+                .Append("select @@ROWCOUNT");
 
+                var result = conn.Query<int>(sb.ToString(), new { user = user, player_id = player_id });
+                return result.First();
+            }
+        }
+
+        public int RemovePlayerFromStarters(string user, int player_id)
+        {
+            using (IDbConnection conn = new DBConn().Connection)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append("UPDATE UserClub ")
+                .Append("SET is_main_11 = 0 ")
+                .Append("where user_id = ( select id from DiscordUsers where discord_handle = @user )  and player_id = @player_id ")
+                .Append("select @@ROWCOUNT");
+
+                var result = conn.Query<int>(sb.ToString(), new { user = user, player_id = player_id });
+                return result.First();
+            }
+        }
     }
 }
