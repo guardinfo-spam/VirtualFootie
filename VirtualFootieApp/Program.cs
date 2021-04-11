@@ -1,16 +1,16 @@
 ﻿using Discord;
-using Discord.Net;
 using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Threading.Tasks;
-using VirtualFootieApp.Services;
-using VFA.Lib.Support;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using VFA.Lib.Storage;
+using VFA.Lib.Support;
+using VirtualFootieApp.Database;
+using VirtualFootieApp.Services;
 
 namespace VirtualFootieApp
 {
@@ -19,7 +19,8 @@ namespace VirtualFootieApp
         private readonly IConfiguration _config;
         private DiscordSocketClient _client;
         private List<CardTypeClaimChance> _cardTypeClaimChances;
-        private WeightedRandomGenerator<Player> _weightedData;
+        private WeightedRandomGenerator<APIPlayerData> _weightedData;
+        private List<APIPlayerData> _allPlayersData;
 
         public static void Main(string[] args)
          => new Program().MainAsync().GetAwaiter().GetResult();
@@ -35,6 +36,12 @@ namespace VirtualFootieApp
             _config = _builder.Build();
 
             this.PrepareClaimChancesData();
+            this.CacheData();
+        }
+
+        public void CacheData()
+        {
+            _allPlayersData = new DBLayer().LoadAllPlayers().ToList();
         }
 
         public void PrepareClaimChancesData()
@@ -50,13 +57,25 @@ namespace VirtualFootieApp
 
         public void PrepareWeightedGenerator()
         {
-            _weightedData = new WeightedRandomGenerator<Player>();
-            var players = new PlayerData().GetAllPlayers();
-
-            foreach ( var player in players )
+            _weightedData = new WeightedRandomGenerator<APIPlayerData>();
+            
+            foreach ( var player in _allPlayersData )
             {
-                //_weightedData.AddEntry(player, )
+                _weightedData.AddEntry(player, DetermineWeight(player.rating.HasValue?player.rating.Value : 50));
             }
+
+            _allPlayersData = null;
+        }
+
+        public double DetermineWeight(int rating)
+        {
+            if (rating >= 95 && rating < 100) return 0.05;
+            if (rating >= 90 && rating <= 94) return 0.25;
+            if (rating >= 85 && rating < 90) return 0.7;
+            if (rating >= 80 && rating < 85) return 10;
+            if (rating >= 65 && rating < 79) return 20;
+
+            return 20;
         }
 
 
@@ -96,10 +115,6 @@ namespace VirtualFootieApp
 
         private ServiceProvider ConfigureServices()
         {
-            // this returns a ServiceProvider that is used later to call for those services
-            // we can add types we have access to here, hence adding the new using statement:
-            // using csharpi.Services;
-            // the config we build is also added, which comes in handy for setting the command prefix!
             return new ServiceCollection()
                 .AddSingleton(_config)
                 .AddSingleton<DiscordSocketClient>()
