@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtualFootieApp", "VirtualFootieApp.csproj", "{19D800E5-1C03-411E-B188-62C20E756AD5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtualFootieApp", "VirtualFootieApp.csproj", "{19D800E5-1C03-411E-B188-62C20E756AD5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VFA.Lib", "..\VFA.Lib\VFA.Lib.csproj", "{7BAFCC68-A9FC-4DE3-8FEF-EC49D9A9628B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FutBinImporter", "..\..\FutbinImporter\FutBinImporter\FutBinImporter.csproj", "{CEBF92EC-09F9-4F0E-8C67-C0AD82D8C2BC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{19D800E5-1C03-411E-B188-62C20E756AD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19D800E5-1C03-411E-B188-62C20E756AD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19D800E5-1C03-411E-B188-62C20E756AD5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BAFCC68-A9FC-4DE3-8FEF-EC49D9A9628B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BAFCC68-A9FC-4DE3-8FEF-EC49D9A9628B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BAFCC68-A9FC-4DE3-8FEF-EC49D9A9628B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BAFCC68-A9FC-4DE3-8FEF-EC49D9A9628B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CEBF92EC-09F9-4F0E-8C67-C0AD82D8C2BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CEBF92EC-09F9-4F0E-8C67-C0AD82D8C2BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CEBF92EC-09F9-4F0E-8C67-C0AD82D8C2BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CEBF92EC-09F9-4F0E-8C67-C0AD82D8C2BC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

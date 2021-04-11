@@ -1,4 +1,22 @@
 ﻿{
     "Token": "ODI4NTc1MDAxMzY3NDEyNzc3.YGrkmg.Fzc7wDZyhUQ3iXRJ6m4IuLBlV0o",
-    "Prefix": ";"
+    "Prefix": ";",
+    "CardTypeClaimChance": [
+        {
+            "Name": "Bronze",
+            "Chance": 60
+        },
+        {
+            "Name": "Silver",
+            "Chance": 30
+        },
+        {
+            "Name": "Gold",
+            "Chance": 7
+        },
+        {
+            "Name": "Icon",
+            "Chance": 0.05
+        }        
+    ]
 }

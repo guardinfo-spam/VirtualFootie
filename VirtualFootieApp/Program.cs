@@ -8,6 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
 using VirtualFootieApp.Services;
+using VFA.Lib.Support;
+using System.Collections.Generic;
+using VFA.Lib.Storage;
 
 namespace VirtualFootieApp
 {
@@ -15,68 +18,68 @@ namespace VirtualFootieApp
     {
         private readonly IConfiguration _config;
         private DiscordSocketClient _client;
+        private List<CardTypeClaimChance> _cardTypeClaimChances;
+        private WeightedRandomGenerator<Player> _weightedData;
 
         public static void Main(string[] args)
          => new Program().MainAsync().GetAwaiter().GetResult();
 
 
         public Program()
-        {
-            // create the configuration
+        {            
             var _builder = new ConfigurationBuilder()
                 .SetBasePath(AppContext.BaseDirectory)
-                .AddJsonFile(path: "config.json");
+                .AddJsonFile(path: "config.json")
+                .AddJsonFile("players.json", optional: false, reloadOnChange: true);
 
-            // build the configuration and assign to _config          
             _config = _builder.Build();
+
+            this.PrepareClaimChancesData();
         }
+
+        public void PrepareClaimChancesData()
+        {
+            _cardTypeClaimChances = new List<CardTypeClaimChance>()
+            {
+                 new CardTypeClaimChance(Enums.CardCategory.Gold, 5),
+                 new CardTypeClaimChance(Enums.CardCategory.Silver, 40),
+                 new CardTypeClaimChance(Enums.CardCategory.Gold, 5),
+                 new CardTypeClaimChance(Enums.CardCategory.Gold, 0.05)
+            };
+        }
+
+        public void PrepareWeightedGenerator()
+        {
+            _weightedData = new WeightedRandomGenerator<Player>();
+            var players = new PlayerData().GetAllPlayers();
+
+            foreach ( var player in players )
+            {
+                //_weightedData.AddEntry(player, )
+            }
+        }
+
+
 
         public async Task MainAsync()
         {
             using (var services = ConfigureServices())
-            {
-                // get the client and assign to client 
-                // you get the services via GetRequiredService<T>
+            {                
                 var client = services.GetRequiredService<DiscordSocketClient>();
                 _client = client;
-
-                // setup logging and the ready event
+                
+             
                 client.Log += LogAsync;
                 client.Ready += ReadyAsync;
                 services.GetRequiredService<CommandService>().Log += LogAsync;
 
-                // this is where we get the Token value from the configuration file, and start the bot
                 await client.LoginAsync(TokenType.Bot, _config["Token"]);
                 await client.StartAsync();
 
-                // we get the CommandHandler class here and call the InitializeAsync method to start things up for the CommandHandler service
                 await services.GetRequiredService<CommandHandler>().InitializeAsync();
 
                 await Task.Delay(-1);
             }
-
-            //-----------------
-
-            _client = new DiscordSocketClient();
-
-            _client.Log += Log;
-
-            //  You can assign your bot token to a string, and pass that in to connect.
-            //  This is, however, insecure, particularly if you plan to have your code hosted in a public repository.
-            var token = "ODI4NTc1MDAxMzY3NDEyNzc3.YGrkmg.Fzc7wDZyhUQ3iXRJ6m4IuLBlV0o";
-
-            // Some alternative options would be to keep your token in an Environment Variable or a standalone file.
-            // var token = Environment.GetEnvironmentVariable("NameOfYourEnvironmentVariable");
-            // var token = File.ReadAllText("token.txt");
-            // var token = JsonConvert.DeserializeObject<AConfigurationClass>(File.ReadAllText("config.json")).Token;
-
-            await _client.LoginAsync(TokenType.Bot, token);
-            await _client.StartAsync();
-
-            await Log(new LogMessage( LogSeverity.Info, "bot", "I am alive"));
-
-            // Block this task until the program is closed.
-            await Task.Delay(-1);
         }
 
         private Task LogAsync(LogMessage log)
