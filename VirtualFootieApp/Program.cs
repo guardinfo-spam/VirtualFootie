@@ -4,10 +4,9 @@ using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using VFA.Lib.Storage;
+using VFA.Lib;
 using VFA.Lib.Support;
 using VirtualFootieApp.Database;
 using VirtualFootieApp.Services;
@@ -18,9 +17,7 @@ namespace VirtualFootieApp
     {
         private readonly IConfiguration _config;
         private DiscordSocketClient _client;
-        private List<CardTypeClaimChance> _cardTypeClaimChances;
-        private WeightedRandomGenerator<APIPlayerData> _weightedData;
-        private List<APIPlayerData> _allPlayersData;
+        
         public IServiceProvider BuildProvider() => new ServiceCollection().AddSingleton<CacheService>().BuildServiceProvider();
 
         public static void Main(string[] args)
@@ -73,8 +70,7 @@ namespace VirtualFootieApp
             using (var services = ConfigureServices())
             {                
                 var client = services.GetRequiredService<DiscordSocketClient>();
-                _client = client;
-                
+                _client = client;                
              
                 client.Log += LogAsync;
                 client.Ready += ReadyAsync;
@@ -108,6 +104,7 @@ namespace VirtualFootieApp
                 .AddSingleton<DiscordSocketClient>()
                 .AddSingleton<CommandService>()
                 .AddSingleton<CommandHandler>()
+                .AddScoped<IMatchEngine, SimpleMatchEngine>()
                 .BuildServiceProvider();
         }
 

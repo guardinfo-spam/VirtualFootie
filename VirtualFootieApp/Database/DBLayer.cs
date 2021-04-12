@@ -152,5 +152,26 @@ namespace VirtualFootieApp.Database
                 return result.First();
             }
         }
+
+
+        public int GetFirstElevenStrength(string user)
+        {
+            using (IDbConnection conn = new DBConn().Connection)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append("select  (p.pace + p.physicality + p.defending + p.dribbling + p.passing + p.shooting) as TeamStats from userclub u ")
+                .Append("inner join PlayersData p on u.player_id = p.PlayerID ")
+                .Append("inner join DiscordUsers d on d.id = u.user_id ")
+                .Append("where d.discord_handle = @user and u.is_main_11 = 1");
+
+                var result = conn.Query<int>(sb.ToString(), new { user = user });
+
+                if (result.Any()) return result.First();
+                else return 0;
+            }
+        }
+
+
+
     }
 }

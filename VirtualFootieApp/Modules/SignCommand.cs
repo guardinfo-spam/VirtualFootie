@@ -68,7 +68,7 @@ namespace VirtualFootieApp.Modules
             };
 
             embed.WithFields(country, club,statsSeparator, stats1, stats2);
-            embed.WithFooter($"claimed by {user.Username} on {DateTime.UtcNow} UTC");
+            embed.WithFooter($"initiated by {user.Username} on {DateTime.UtcNow} UTC");
             
             return embed.Build();            
         }
