@@ -21,6 +21,7 @@ namespace VirtualFootieApp
         private List<CardTypeClaimChance> _cardTypeClaimChances;
         private WeightedRandomGenerator<APIPlayerData> _weightedData;
         private List<APIPlayerData> _allPlayersData;
+        public IServiceProvider BuildProvider() => new ServiceCollection().AddSingleton<CacheService>().BuildServiceProvider();
 
         public static void Main(string[] args)
          => new Program().MainAsync().GetAwaiter().GetResult();
@@ -35,50 +36,37 @@ namespace VirtualFootieApp
 
             _config = _builder.Build();
 
-            this.PrepareClaimChancesData();
-            this.CacheData();
+            CachedPlayersWeightedData();
         }
 
-        public void CacheData()
+        public void CachedPlayersWeightedData()
         {
-            _allPlayersData = new DBLayer().LoadAllPlayers().ToList();
-        }
-
-        public void PrepareClaimChancesData()
-        {
-            _cardTypeClaimChances = new List<CardTypeClaimChance>()
-            {
-                 new CardTypeClaimChance(Enums.CardCategory.Gold, 5),
-                 new CardTypeClaimChance(Enums.CardCategory.Silver, 40),
-                 new CardTypeClaimChance(Enums.CardCategory.Gold, 5),
-                 new CardTypeClaimChance(Enums.CardCategory.Gold, 0.05)
-            };
-        }
-
-        public void PrepareWeightedGenerator()
-        {
-            _weightedData = new WeightedRandomGenerator<APIPlayerData>();
-            
-            foreach ( var player in _allPlayersData )
-            {
-                _weightedData.AddEntry(player, DetermineWeight(player.rating.HasValue?player.rating.Value : 50));
-            }
-
-            _allPlayersData = null;
-        }
+            var dBLayer = new DBLayer();
+            var playersData = dBLayer.LoadAllPlayers().ToList();
+            CacheService.playersWeightedData = new WeightedRandomGenerator<APIPlayerData>();
+            playersData.ForEach(p => CacheService.playersWeightedData.AddEntry(p, DetermineWeight(p.rating.HasValue ? p.rating.Value : 50), DeterminePrice(p)));
+        }        
 
         public double DetermineWeight(int rating)
         {
             if (rating >= 95 && rating < 100) return 0.05;
-            if (rating >= 90 && rating <= 94) return 0.25;
-            if (rating >= 85 && rating < 90) return 0.7;
-            if (rating >= 80 && rating < 85) return 10;
-            if (rating >= 65 && rating < 79) return 20;
+            if (rating >= 90 && rating < 95) return 0.2;
+            if (rating >= 85 && rating < 90) return 0.75;
+            if (rating >= 80 && rating < 85) return 5;
+            if (rating >= 75 && rating < 80) return 28;
+            
+            if (rating >= 70 && rating < 75) return 26;
+            if (rating >= 65 && rating < 70) return 20;
+            if (rating >= 60 && rating < 65) return 15;
+            if (rating >= 45 && rating < 60) return 5;
 
             return 20;
         }
 
-
+        public int DeterminePrice(APIPlayerData playerData)
+        {
+            return 1000;
+        }
 
         public async Task MainAsync()
         {

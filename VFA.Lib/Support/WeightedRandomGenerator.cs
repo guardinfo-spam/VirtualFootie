@@ -8,6 +8,7 @@ namespace VFA.Lib.Support
         private struct Entry
         {
             public double accumulatedWeight;
+            public int price;
             public T item;
         }
 
@@ -15,10 +16,10 @@ namespace VFA.Lib.Support
         private double accumulatedWeight;
         private Random rand = new Random();
 
-        public void AddEntry(T item, double weight)
+        public void AddEntry(T item, double weight, int price)
         {
             accumulatedWeight += weight;
-            entries.Add(new Entry { item = item, accumulatedWeight = accumulatedWeight });
+            entries.Add(new Entry { item = item, accumulatedWeight = accumulatedWeight, price = price });
         }
 
         public T GetRandom()
