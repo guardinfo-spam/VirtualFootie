@@ -14,7 +14,7 @@ namespace VirtualFootieApp.Modules
     public class FriendlyCommand : ModuleBase
     {
         [Command("friendly")]
-        public async Task Friendly(string discord_id)
+        public async Task Friendly1(string discord_id)
         {
             discord_id = discord_id.Replace("<@", string.Empty);
             discord_id = discord_id.Replace("!", string.Empty);
@@ -58,12 +58,112 @@ namespace VirtualFootieApp.Modules
             var result = new SimpleMatchEngine().DetermineWinner(initiatorStats, targetStats);
             var matchResult = GenerateGoals(result, home11, target11);
 
-            var friendlyEmbed = PrepareFriendlyEmbed(user.Username, matchResult);
-            await ReplyAsync(null, false, friendlyEmbed);
+            //var friendlyEmbed = PrepareFriendlyEmbed(user.Username, matchResult, user.Username, target_handle);
+            var friendlyEmbed = PrepareMatchResultEmbed(user.Username, user.Username, target_handle, 0, 0, "", "", "Status - Teams are coming onto pitch");            
 
-            //await ReplyAsync($"winner : {result}");
+            var allScorers = new List<MatchGoalsScorers>();
+
+            foreach ( var item in matchResult.HomeScorers )
+            {
+                allScorers.Add(new MatchGoalsScorers { isHomeTeam = true, Name = item.Name, Minute = item.Minute });
+            }
+
+            foreach (var item in matchResult.AwayScorers)
+            {
+                allScorers.Add(new MatchGoalsScorers { isHomeTeam = false, Name = item.Name, Minute = item.Minute });
+            }
+
+            allScorers = allScorers.OrderBy(p => p.Minute).ToList();
+
+            var message = await ReplyAsync(null, false, friendlyEmbed);
+            await Task.Delay(5000);
+            
+            var firstHalfEmbed = PrepareMatchResultEmbed(user.Username, user.Username, target_handle, 0, 0, "", "", "Status - First Half");
+            await message.ModifyAsync(x => x.Embed = firstHalfEmbed);
+
+            int homeGoals = 0;
+            int awayGoals = 0;
+            StringBuilder homeScorers = new StringBuilder();
+            StringBuilder awayScorers = new StringBuilder();
+            string statusMessage = "Status - First Half";
+
+            foreach ( var item in allScorers)
+            {
+                if (item.Minute >= 45) statusMessage = "Status - Second Half";
+
+                if (item.isHomeTeam)
+                {
+                    homeGoals++;
+                    homeScorers.AppendLine($"{item.Name} ({item.Minute})");
+                }
+                else 
+                { 
+                    awayGoals++; 
+                    awayScorers.AppendLine($"{item.Name} ({item.Minute})");
+                }                
+
+                var updatedEmbed = PrepareMatchResultEmbed(user.Username, user.Username, target_handle, homeGoals, awayGoals, homeScorers.ToString(), awayScorers.ToString(), statusMessage );
+                await message.ModifyAsync(x => x.Embed = updatedEmbed);
+            }
+
+            var finalEmbed = PrepareMatchResultEmbed(user.Username, user.Username, target_handle, homeGoals, awayGoals, homeScorers.ToString(), awayScorers.ToString(), "Match finished");
+            await message.ModifyAsync(x => x.Embed = finalEmbed);
+        }        
+        
+        public Embed PrepareMatchResultEmbed(string user, string homeTeamName, string awayTeamName, int homeGoals, int awayGoals, string homeScorers, string awayScorers, string statusMessage)
+        {
+            var embed = new EmbedBuilder();
+            embed.Color = Color.Blue;
+            embed.Title = "";
+
+            EmbedFieldBuilder homeTeam = new EmbedFieldBuilder
+            {
+                IsInline = true,
+                Name = "** **",
+                Value = $"{homeTeamName}"
+            };
+
+            EmbedFieldBuilder score = new EmbedFieldBuilder
+            {
+                IsInline = true,
+                Name = "** **",
+                Value = $"{homeGoals} - {awayGoals}"
+            };
+
+            EmbedFieldBuilder awayTeam = new EmbedFieldBuilder
+            {
+                IsInline = true,
+                Name = "** **",
+                Value = $"{awayTeamName}"
+            };
+
+            EmbedFieldBuilder status = new EmbedFieldBuilder
+            {
+                IsInline = false,
+                Name = "** **",
+                Value = $"{statusMessage}"
+            };
+
+            EmbedFieldBuilder homegoals = new EmbedFieldBuilder
+            {
+                IsInline = true,
+                Name = "Home",
+                Value = string.IsNullOrWhiteSpace(homeScorers)? "** **" : homeScorers
+            };
+
+            EmbedFieldBuilder awaygoals = new EmbedFieldBuilder
+            {
+                IsInline = true,
+                Name = "Away",
+                Value = string.IsNullOrWhiteSpace(awayScorers) ? "** **" : awayScorers
+            };
+
+            embed.WithFields(homeTeam, score, awayTeam, status, homegoals, awaygoals);
+            embed.WithFooter($"initiated by {user} on {DateTime.UtcNow} UTC");
+
+            return embed.Build();
         }
-
+        
         public Embed PrepareErrorEmbed(string message, string user)
         {
             var embed = new EmbedBuilder();
@@ -100,18 +200,17 @@ namespace VirtualFootieApp.Modules
             return result;
         }
 
-        public Embed PrepareFriendlyEmbed(string user, MatchResult matchResult)
+        public Embed PrepareFriendlyEmbed(string user, MatchResult matchResult, string homeTeamName, string awayTeamName)
         {
             var embed = new EmbedBuilder();
             embed.Color = Color.Blue;
             embed.Title = "";
-            //embed.AddField(claim.rating.ToString(), claim.position);
 
             EmbedFieldBuilder homeTeam = new EmbedFieldBuilder
             {
                 IsInline = true,
                 Name = "** **",
-                Value = "team 1"
+                Value = $"{homeTeamName}"
             };
 
             EmbedFieldBuilder score = new EmbedFieldBuilder
@@ -125,14 +224,14 @@ namespace VirtualFootieApp.Modules
             {
                 IsInline = true,
                 Name = "** **",
-                Value = "team 2"
+                Value = $"{awayTeamName}"
             };
 
             EmbedFieldBuilder status = new EmbedFieldBuilder
             {
                 IsInline = false,
                 Name = "** **",
-                Value = "Status - First Half"
+                Value = "Status - Teams are coming onto pitch"
             };
 
             EmbedFieldBuilder homegoals = new EmbedFieldBuilder
