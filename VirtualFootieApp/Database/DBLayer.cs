@@ -38,9 +38,12 @@ namespace VirtualFootieApp.Database
         {
             using (IDbConnection conn = new DBConn().Connection)
             {
-                string query = "INSERT INTO UserClub ( user_id, player_id) values ( @user_id, @player_id )";
-                var result = conn.ExecuteScalar<int>(query, new { user_id = userID, player_id = playerID });
-
+                var now = DateTime.UtcNow;
+                StringBuilder sb = new StringBuilder();
+                sb.Append("INSERT INTO UserClub ( user_id, player_id) values ( @user_id, @player_id ) ")
+                  .Append("UPDATE DiscordUsers set last_claim_datetime_utc = @claimTime where id = @user_ID");
+                
+                var result = conn.ExecuteScalar<int>(sb.ToString(), new { user_id = userID, player_id = playerID, claimTime = now });
                 return result;
                
             }
