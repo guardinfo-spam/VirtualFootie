@@ -194,5 +194,18 @@ namespace VirtualFootieApp.Database
                 return result;
             }                    
         }
+
+        public DiscordUsersDTO GetDiscordUserData(int id) 
+        {
+            using (IDbConnection conn = new DBConn().Connection)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append("select * from DiscordUsers ")
+                .Append("where id = @user_id ");                
+
+                var result = conn.QuerySingle<DiscordUsersDTO>(sb.ToString(), new { user_id = id});
+                return result;
+            }
+        }
     }
 }

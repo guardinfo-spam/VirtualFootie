@@ -16,15 +16,52 @@ namespace VirtualFootieApp.Modules
         {
             var dBLayer = new DBLayer();
             var user = Context.User;
-
-            var claim = CacheService.playersWeightedData.GetRandom();
             int userID = dBLayer.GetUserIDByDiscordHandle(user.Username);
+
+            var userData = dBLayer.GetDiscordUserData(userID);            
+
+            if ( userData.is_banned )
+            {
+                await ReplyAsync(null, false, this.PrepareBanEmbed(user.Username));
+                return;
+            }
+
+            if (userData.last_claim_datetime_utc.HasValue)
+            {
+                TimeSpan? dateDiff = DateTime.UtcNow - userData.last_claim_datetime_utc;
+                if (dateDiff.Value.TotalHours < AppSettingsService._claimFrequencyInHours)
+                {
+                    await ReplyAsync(null, false, this.PrepareDeclineClaimEmbed(user.Username ,AppSettingsService._claimFrequencyInHours * 60 - dateDiff.Value.TotalMinutes));
+                    return;
+                }
+            }
+           
+            var claim = CacheService.playersWeightedData.GetRandom();
             var result = dBLayer.AddClaimToUser(userID, claim.Item1.PlayerID);
 
             var claimEmbed = PrepareSignEmbed(claim.Item1, claim.Item2, user);
             await ReplyAsync(null, false, claimEmbed);
         }
 
+        
+        public Embed PrepareDeclineClaimEmbed(string user, double minutes)
+        {
+            var embed = new EmbedBuilder();
+            embed.Color = Color.Red;
+            embed.Title = $"You can claim again in {minutes.ToString("N0")} minutes";
+            embed.WithFooter($"initiated by {user} on {DateTime.UtcNow} UTC");
+            return embed.Build();
+        }
+        
+        public Embed PrepareBanEmbed(string user)
+        {
+            var embed = new EmbedBuilder();
+            embed.Color = Color.Red;
+            embed.Title = $"You're banned, no claims for you, sorry!";
+            embed.WithFooter($"initiated by {user} on {DateTime.UtcNow} UTC");
+            return embed.Build();
+        }
+        
         public Embed PrepareSignEmbed(APIPlayerData claim, double price, IUser user)
         {           
             var embed = new EmbedBuilder();
