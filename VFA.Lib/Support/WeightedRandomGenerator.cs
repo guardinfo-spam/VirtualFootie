@@ -8,7 +8,7 @@ namespace VFA.Lib.Support
         private struct Entry
         {
             public double accumulatedWeight;
-            public int price;
+            public double price;
             public T item;
         }
 
@@ -16,13 +16,13 @@ namespace VFA.Lib.Support
         private double accumulatedWeight;
         private Random rand = new Random();
 
-        public void AddEntry(T item, double weight, int price)
+        public void AddEntry(T item, double weight, double price)
         {
             accumulatedWeight += weight;
             entries.Add(new Entry { item = item, accumulatedWeight = accumulatedWeight, price = price });
         }
 
-        public T GetRandom()
+        public (T, double) GetRandom()
         {
             double r = rand.NextDouble() * accumulatedWeight;
 
@@ -30,10 +30,11 @@ namespace VFA.Lib.Support
             {
                 if (entry.accumulatedWeight >= r)
                 {
-                    return entry.item;
+                    return (entry.item, entry.price);
                 }
             }
-            return default(T);
+
+            throw new Exception();
         }
     }
 }

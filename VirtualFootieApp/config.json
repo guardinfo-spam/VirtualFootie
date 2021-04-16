@@ -1,22 +1,55 @@
 ﻿{
     "Token": "ODI4NTc1MDAxMzY3NDEyNzc3.YGrkmg.Fzc7wDZyhUQ3iXRJ6m4IuLBlV0o",
-    "Prefix": ";",
-    "CardTypeClaimChance": [
+    "Prefix": "=",
+    "PlayerSalePricePercentage": 40,
+    "Ratings": [
         {
-            "Name": "Bronze",
-            "Chance": 60
+            "CatMin": 45,
+            "CatMax": 50,
+            "ClaimChancePercentage": 5,
+            "PricePerBS": 2
         },
         {
-            "Name": "Silver",
-            "Chance": 30
+            "CatMin": 51,
+            "CatMax": 60,
+            "ClaimChancePercentage": 15,
+            "PricePerBS": 10
         },
         {
-            "Name": "Gold",
-            "Chance": 7
+            "CatMin": 61,
+            "CatMax": 70,
+            "ClaimChancePercentage": 30,
+            "PricePerBS": 50
         },
         {
-            "Name": "Icon",
-            "Chance": 0.05
-        }        
+            "CatMin": 71,
+            "CatMax": 80,
+            "ClaimChancePercentage": 25,
+            "PricePerBS": 500
+        },
+        {
+            "CatMin": 81,
+            "CatMax": 85,
+            "ClaimChancePercentage": 5,
+            "PricePerBS": 1000
+        },
+        {
+            "CatMin": 86,
+            "CatMax": 90,
+            "ClaimChancePercentage": 0.6,
+            "PricePerBS": 2000
+        },
+        {
+            "CatMin": 91,
+            "CatMax": 95,
+            "ClaimChancePercentage": 0.3,
+            "PricePerBS": 4000
+        },
+        {
+            "CatMin": 96,
+            "CatMax": 100,
+            "ClaimChancePercentage": 0.1,
+            "PricePerBS": 8000
+        }
     ]
 }

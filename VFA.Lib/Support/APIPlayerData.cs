@@ -26,21 +26,21 @@
         public int? nation { get; set; }
         public int? club { get; set; }
 
-        public int? rating { get; set; }
+        public int rating { get; set; }
 
-        public int? rating_average { get; set; }
+        public int rating_average { get; set; }
 
-        public int? pace { get; set; }
+        public int pace { get; set; }
 
-        public int? shooting { get; set; }
+        public int shooting { get; set; }
 
-        public int? passing { get; set; }
+        public int passing { get; set; }
 
-        public int? dribbling { get; set; }
+        public int dribbling { get; set; }
 
-        public int? defending { get; set; }
+        public int defending { get; set; }
 
-        public int? physicality { get; set; }
+        public int physicality { get; set; }
 
         public int? rarity { get; set; }
 
@@ -57,6 +57,14 @@
         public int? skill_moves { get; set; }
 
         public int? weak_foot { get; set; }
+
+        public double PurchasePrice { get; set; }
+
+        public double SellPrice { get; set; }
+
+        public int BaseStats { get {
+                return this.defending + this.dribbling + this.passing + this.physicality + this.shooting + this.pace;
+            } }
 
         
         public override string ToString()

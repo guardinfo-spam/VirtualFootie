@@ -19,13 +19,13 @@ namespace VirtualFootieApp.Modules
 
             var claim = CacheService.playersWeightedData.GetRandom();
             int userID = dBLayer.GetUserIDByDiscordHandle(user.Username);
-            var result = dBLayer.AddClaimToUser(userID, claim.PlayerID);
+            var result = dBLayer.AddClaimToUser(userID, claim.Item1.PlayerID);
 
-            var claimEmbed = PrepareSignEmbed(claim, user);
+            var claimEmbed = PrepareSignEmbed(claim.Item1, claim.Item2, user);
             await ReplyAsync(null, false, claimEmbed);
         }
 
-        public Embed PrepareSignEmbed(APIPlayerData claim, IUser user)
+        public Embed PrepareSignEmbed(APIPlayerData claim, double price, IUser user)
         {           
             var embed = new EmbedBuilder();
             embed.Color = Color.Blue;
@@ -44,6 +44,13 @@ namespace VirtualFootieApp.Modules
                 IsInline = true,
                 Name = "Club",
                 Value = claim.club
+            };
+
+            EmbedFieldBuilder cost = new EmbedFieldBuilder
+            {
+                IsInline = false,
+                Name = "Price",
+                Value = price.ToString("N0")
             };
 
             EmbedFieldBuilder statsSeparator = new EmbedFieldBuilder
@@ -67,7 +74,7 @@ namespace VirtualFootieApp.Modules
                 Value = new StringBuilder().AppendLine($"{claim.dribbling}  **DRI**").AppendLine($"{claim.defending}  **DEF**").Append($"{claim.physicality}  **PHY**").ToString()
             };
 
-            embed.WithFields(country, club,statsSeparator, stats1, stats2);
+            embed.WithFields(country, club, cost, statsSeparator, stats1, stats2);
             embed.WithFooter($"initiated by {user.Username} on {DateTime.UtcNow} UTC");
             
             return embed.Build();            

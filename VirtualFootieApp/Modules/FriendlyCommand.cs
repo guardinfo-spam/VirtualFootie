@@ -188,12 +188,12 @@ namespace VirtualFootieApp.Modules
 
             foreach ( var player in main11 )
             {
-                result += player.defending.Value;
-                result += player.dribbling.Value;
-                result += player.passing.Value;
-                result += player.physicality.Value;
-                result += player.shooting.Value;
-                result += player.pace.Value;
+                result += player.defending;
+                result += player.dribbling;
+                result += player.passing;
+                result += player.physicality;
+                result += player.shooting;
+                result += player.pace;
             }
 
             return result;
