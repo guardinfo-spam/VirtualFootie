@@ -3,26 +3,26 @@ using System.Collections.Generic;
 
 namespace VFA.Lib.Support
 {
-    public sealed class WeightedRandomGenerator<T>
+    public sealed class WeightedRandomGenerator
     {
         private struct Entry
         {
             public double accumulatedWeight;
             public double price;
-            public T item;
+            public APIPlayerData item;
         }
 
         private List<Entry> entries = new List<Entry>();
         private double accumulatedWeight;
         private Random rand = new Random();
 
-        public void AddEntry(T item, double weight, double price)
+        public void AddEntry(APIPlayerData item, double weight, double price)
         {
             accumulatedWeight += weight;
             entries.Add(new Entry { item = item, accumulatedWeight = accumulatedWeight, price = price });
         }
 
-        public (T, double) GetRandom()
+        public (APIPlayerData, double) GetRandom()
         {
             double r = rand.NextDouble() * accumulatedWeight;
 
@@ -35,6 +35,11 @@ namespace VFA.Lib.Support
             }
 
             throw new Exception();
+        }
+
+       public double Price (int playerID)
+        {
+            return this.entries.Find(p => p.item.PlayerID == playerID).price;
         }
     }
 }

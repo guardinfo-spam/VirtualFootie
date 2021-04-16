@@ -14,7 +14,7 @@ namespace VirtualFootieApp.Modules
             var user = Context.User;
 
             var balance = new DBLayer().UserBalance(user.Username);
-            sb.Append($" Your balance is {balance}");
+            sb.Append($" Your balance is {balance.ToString("N0")}");
 
             await ReplyAsync(sb.ToString());
         }

@@ -7,6 +7,6 @@ namespace VirtualFootieApp.Services
 {
     public class CacheService
     {
-        public static WeightedRandomGenerator<APIPlayerData> playersWeightedData;
+        public static WeightedRandomGenerator playersWeightedData;
     }
 }

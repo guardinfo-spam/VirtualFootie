@@ -5,7 +5,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using VFA.Lib;
@@ -18,10 +17,8 @@ namespace VirtualFootieApp
     class Program
     {
         private readonly IConfiguration _config;
-        private DiscordSocketClient _client;
-        private int _playerSalePercentage;
-        private List<RatingsConfig> _ratingsConfig = new List<RatingsConfig>();
-        
+        private DiscordSocketClient _client;        
+
         public IServiceProvider BuildProvider() => new ServiceCollection().AddSingleton<CacheService>().BuildServiceProvider();
 
         public static void Main(string[] args)
@@ -36,9 +33,10 @@ namespace VirtualFootieApp
 
             _config = _builder.Build();
 
-            int.TryParse(_config["PlayerSalePricePercentage"], out _playerSalePercentage);
+            int.TryParse(_config["PlayerSalePricePercentage"], out AppSettingsService._playerSalePercentage);
 
-            _ratingsConfig = _config.GetSection("Ratings").Get<List<RatingsConfig>>();
+            AppSettingsService._ratingsConfig = _config.GetSection("Ratings").Get<List<RatingsConfig>>();
+            int.TryParse(_config["ClaimFrequencyInHours"], out AppSettingsService._claimFrequencyInHours);
             CachePlayersWeightedData();
         }
 
@@ -46,19 +44,19 @@ namespace VirtualFootieApp
         {
             var dBLayer = new DBLayer();
             var playersData = dBLayer.LoadAllPlayers().ToList();
-            CacheService.playersWeightedData = new WeightedRandomGenerator<APIPlayerData>();
+            CacheService.playersWeightedData = new WeightedRandomGenerator();
             playersData.ForEach(p => CacheService.playersWeightedData.AddEntry(p, DetermineWeight(p.rating), DeterminePrice(p)));
         }        
 
         public double DetermineWeight(int rating)
         {
-            var weight = _ratingsConfig.Where(p => p.CatMin <= rating && p.CatMax >= rating).FirstOrDefault().ClaimChancePercentage;
+            var weight = AppSettingsService._ratingsConfig.Where(p => p.CatMin <= rating && p.CatMax >= rating).FirstOrDefault().ClaimChancePercentage;
             return weight;
         }
 
         public int DeterminePrice(APIPlayerData playerData)
         {
-            var price = _ratingsConfig.Where(p => p.CatMin <= playerData.rating && p.CatMax >= playerData.rating).FirstOrDefault().PricePerBS * playerData.BaseStats;
+            var price = AppSettingsService._ratingsConfig.Where(p => p.CatMin <= playerData.rating && p.CatMax >= playerData.rating).FirstOrDefault().PricePerBS * playerData.BaseStats;
             return price;
         }
 

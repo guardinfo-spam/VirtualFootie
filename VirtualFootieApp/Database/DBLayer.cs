@@ -24,7 +24,7 @@ namespace VirtualFootieApp.Database
         {
             using (IDbConnection conn = new DBConn().Connection)
             {
-                string query = "SELECT * from DiscordUsers where discord_handle = @discord_handle";
+                string query = "SELECT balance from DiscordUsers where discord_handle = @discord_handle";
                 var result = conn.Query<int>(query, new { discord_handle = user });
 
                 if (result == null || !result.Any())
@@ -171,7 +171,25 @@ namespace VirtualFootieApp.Database
             }
         }
 
+        public int SellPlayer(string user, int playerID, double sellPrice)
+        {
+            using (IDbConnection conn = new DBConn().Connection)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append("declare @userID int ")
+                .Append("declare @rowsDeleted int ")
+                .Append("set @userID = (select id from DiscordUsers where discord_handle = @user) ")
+                .Append("DELETE FROM UserClub where user_id = @userid and player_id = @playerID ")
+                .Append("set @rowsDeleted = @@ROWCOUNT ")
+                .Append("if @rowsDeleted  = 1 ")
+                .Append("begin ")
+                .Append("update DiscordUsers set balance = balance + @sellPrice where id = @userID ")
+                .Append("end ")
+                .Append("select balance from DiscordUsers where id = @userID");
 
-
+                var result = conn.QuerySingle<int>(sb.ToString(), new { user = user, playerID = playerID, sellPrice = sellPrice });                
+                return result;
+            }                    
+        }
     }
 }
