@@ -16,7 +16,11 @@ Your main 11 can be viewed with =team
 
 you can play others using =friendly DiscordHandle
 
+Player can be sold with =sell playerID
+
 The bot uses the FIFA 21 players and ratings
 
-Winners are determined using the base stats and a random range to give every one a chance.
+Winners are determined using the base stats and a random range to give every one a chance. 
+
+this is a very rough first version, bugs can be expected.
 
