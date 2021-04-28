@@ -9,8 +9,7 @@ namespace FutBinImporter
     class Program
     {
         static HttpClient _client = new HttpClient();
-        private const string apiTokenGspam = "4551147b-06f9-420b-8dba-cde4c9116590";
-        private const string apiTokenEid = "e96282c5-0058-4475-b8b3-5f5353d5d68d";
+        private const string apiTokenGspam = "";
 
         static async Task Main(string[] args)
         {
@@ -20,9 +19,9 @@ namespace FutBinImporter
         static async Task StartImportFromAPI()
         {
             int startPage = 52;
-            string baseUrl = "https://futdb/api/players?page={0}&limit=20";
+            string baseUrl = "";
 
-            _client.DefaultRequestHeaders.Add("x-auth-token", apiTokenEid);
+            _client.DefaultRequestHeaders.Add("x-auth-token", apiTokenGspam);
 
             for ( int index = startPage; index<=startPage + 50; index++ )
             {
