@@ -26,3 +26,4 @@ Winners are determined using the base stats and a random range to give every one
 
 this is a very rough first version, bugs can be expected.
 
+It's based on SoccerGuru bot, just to see what it takes to build something like that
