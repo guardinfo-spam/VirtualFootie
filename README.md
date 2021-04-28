@@ -16,7 +16,9 @@ Your main 11 can be viewed with =team
 
 you can play others using =friendly DiscordHandle
 
-Player can be sold with =sell playerID
+Players can be sold with =sell playerID
+
+Balance can be checked with =balance
 
 The bot uses the FIFA 21 players and ratings
 
